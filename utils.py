@@ -8,45 +8,49 @@ from resizeimage import resizeimage
 
 
 def generate_name(filename, size='', method=''):
-    name = ".".join(filename.split('.')[:-1])
-    ext = filename.split('.')[-1]
-    filename = "_".join([name, size, method]) + "." + ext
+    name, ext = os.path.splitext(filename)
+    filename = "_".join([name, size, method]) + ext
     return filename
 
 
-def generate_image(full_path, size, method):
+def generate_image(file, output_file, size, method):
     try:
-        print full_path
-        img = Image.open(full_path)
+        print file, output_file, "generate_image"
+        img = Image.open(file)
         if method:
             if size:
                 size = size.split('x')
-                size = (int(size[0]), int(size[1]))
+                if len(size) > 1:
+                    size = (int(size[0]), int(size[1]))
+                else:
+                    size = int(size)
                 img = resizeimage.resize(method, img, size)
-            img.save(full_path, img.format)
+            img.save(output_file, img.format)
         return True
     except Exception as e:
         print e
         return False
 
 
-def get_or_create_file(app, full_path, size=None, method=None):
+def get_or_create_file(app, file_path, size=None, method=None):
+    # import ipdb; ipdb.set_trace()
     storage_route = getattr(settings, app.upper())
-    full_path = storage_route + full_path
-    route = full_path.split('/')
-    route = route[1:] if route[0] == "" else route
-    dir_route = "/".join(route[0:-1])
-    filename = generate_name(route[-1], size, method)
-    full_path = full_path.replace(route[-1], filename)
-    if os.path.exists(full_path):
-        return dir_route, filename
+    file_path = storage_route + file_path
+    dir_route = os.path.dirname(file_path)
+    directories = dir_route.split('/')
+    directories = directories[1:] if directories[0] == "" else directories
+    filename = os.path.basename(file_path)
+    output_filename = generate_name(filename, size, method)
+    output_file = file_path.replace(filename, output_filename)
+    if os.path.exists(output_file):
+        return dir_route, output_filename
     else:
         if not os.path.exists(dir_route):
-            for i, directory in enumerate(route[:-1]):
-                current_dir = "/".join(route[0:i + 1])
+            for i, directory in enumerate(directories):
+                current_dir = "/".join(directories[0:i + 1])
                 if not os.path.exists(current_dir):
                     os.makedirs(current_dir)
-        if generate_image(full_path, size, method):
-            return dir_route, filename
+        if generate_image(file_path, output_file, size, method):
+            return dir_route, output_filename
         else:
             raise

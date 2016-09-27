@@ -1,1 +1,1 @@
-LOCALHOST = "/var/www/storage/"
+LOCALHOST = "/var/www/storage"
