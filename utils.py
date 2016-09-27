@@ -1,7 +1,5 @@
 import os
-import requests
 import settings
-from StringIO import StringIO
 
 from PIL import Image
 from resizeimage import resizeimage
@@ -15,15 +13,14 @@ def generate_name(filename, size='', method=''):
 
 def generate_image(file, output_file, size, method):
     try:
-        print file, output_file, "generate_image"
         img = Image.open(file)
         if method:
             if size:
-                size = size.split('x')
+                size = [int(s) for s in size.split('x')]
                 if len(size) > 1:
-                    size = (int(size[0]), int(size[1]))
+                    size = (size[0], size[1])
                 else:
-                    size = int(size)
+                    size = size[0]
                 img = resizeimage.resize(method, img, size)
             img.save(output_file, img.format)
         return True
@@ -33,7 +30,6 @@ def generate_image(file, output_file, size, method):
 
 
 def get_or_create_file(app, file_path, size=None, method=None):
-    # import ipdb; ipdb.set_trace()
     storage_route = getattr(settings, app.upper())
     file_path = storage_route + file_path
     dir_route = os.path.dirname(file_path)
