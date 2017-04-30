@@ -6,17 +6,20 @@ app = Flask(__name__)
 
 @app.route('/<app_client>', methods=['GET'])
 def index(app_client):
-    file = request.args.get('file')
-    size = request.args.get('size')
+    image1 = request.args.get('image1')
+    image2 = request.args.get('image2')
     method = request.args.get('method')
+    width = request.args.get('width')
+    height = request.args.get('height')
     try:
         directory, file = utils.get_or_create_file(
-            app_client, file, size, method
+            app_client, image1, image2, method, width, height
         )
         return send_from_directory(directory, file)
-    except Exception as e:
-        print e
+    except Exception:
         return "KO"
 
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0')
+#    app.run(debug=True)
