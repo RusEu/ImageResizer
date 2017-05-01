@@ -16,10 +16,11 @@ def index(app_client):
             app_client, image1, image2, method, width, height
         )
         return send_from_directory(directory, file)
-    except Exception:
+    except Exception as e:
+        print (e)
         return "KO"
 
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')
-#    app.run(debug=True)
+    app.run(debug=True)
