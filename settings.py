@@ -1,1 +1,1 @@
-LOCALHOST = "/var/www/storage"
+DOBUY = "/var/www/storage"
